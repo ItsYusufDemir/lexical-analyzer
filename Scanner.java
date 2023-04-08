@@ -7,7 +7,7 @@ import java.io.IOException;
 /* Authors: @erenduyuk, @selnaydinn and @ItsYusufDemir
  * Date: 8.04.2023 10:42
  * 
- * Description: 
+ * Description: Making a simple lexical analyzer
  */
 
 
@@ -22,16 +22,23 @@ public class Scanner {
     static char currentChar = ' ';
 
 
-    public static void main(String[]args){
 
-        while(currentChar != EOF) {  //I don't know how to do it yet
+    public static void main(String[]args) throws IOException{
 
+        FileReader F=new FileReader("input.txt");
+
+
+        while(currentChar != '\uffff') {  //F.read() returns -1 which is considered as \uffff since it is type casted to char
+
+            //SKIP
             if (currentChar == ' ' | currentChar == '\t' | currentChar == '\n'){ //If the current char is space, tab or new line, skip
-                lex();
                 continue;
             }
 
+
+
             //BRACKETS
+
 
 
 
@@ -63,25 +70,9 @@ public class Scanner {
     }
 
 
-    //lex() function
-    public static void lex(){
-
-        File input = new File("input.txt");
-        FileReader scan = null;
-        try {
-            scan = new FileReader(input);
-            int content=0;
-            while( (content = scan.read())!= -1){
-                System.out.println((char)content);
-
-            }
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+    //This function updates the global variable currentChar
+    public static void lex(FileReader F) throws IOException {
+        currentChar = (char) F.read();
     }
 
 
