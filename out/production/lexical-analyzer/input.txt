@@ -1,2 +1,2 @@
-define fibonacci let
-cur 
+define '\u4562' let
+cons   fibonacci7

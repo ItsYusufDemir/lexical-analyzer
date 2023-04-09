@@ -9,14 +9,10 @@ import java.io.IOException;
  */
 
 
-
-
-
-
-
 public class Scanner {
 
     //GLOBAL VARIABLES
+    static char previousChar = ' ';
     static char currentChar = ' ';
     static String currentToken = "";
     static int line = 0;
@@ -46,10 +42,46 @@ public class Scanner {
 
 
 
-            //CHAR
 
 
 
+
+            /* CHAR READING
+             *
+             * Char will be given in unicode like '\u1234'
+             */
+            if(currentChar == '\''){
+
+                boolean haveError = false;
+                currentToken += currentChar;
+                lex(F);
+
+                while (currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r'){
+                    currentToken += currentChar;
+                    lex(F);
+                }
+
+                if(currentToken.length() == 4){  //If we have '\''
+                    if(!(currentToken.charAt(0) == '\'' && currentToken.charAt(1) == '\\' && currentToken.charAt(2) == '\'' && currentToken.charAt(3) == '\''))
+                        haveError = true;
+                }
+                else if (currentToken.length() == 8 ) {  //If we have '\u12345
+                    if(!(currentToken.charAt(0) == '\'' && currentToken.charAt(1) == '\\' && currentToken.charAt(2) == 'u' && isHexDigit(currentToken.charAt(3))
+                    && isHexDigit(currentToken.charAt(4)) && isHexDigit(currentToken.charAt(5)) && isHexDigit(currentToken.charAt(6)) && currentToken.charAt(7) == '\'' ))
+                        haveError = true;
+                }
+                else
+                    haveError = true;
+
+
+                if(haveError)
+                    printError(currentToken);
+                else
+                    printToken("CHAR");
+
+                currentToken = ""; //Reset recording
+                continue;
+            }
 
 
 
@@ -65,7 +97,15 @@ public class Scanner {
 
 
 
-            //IDENTIFIER AND KEYWORD
+
+
+
+
+            /* IDENTIFIER AND KEYWORDS
+             *
+             * first read the token, than check if it is a keyword or not. If not, then print identifier.
+             * If it is a keyword, then print its name.
+             */
             if(currentChar == '!' || currentChar == '*' || currentChar == '/' || currentChar == ':' || currentChar == '<'
                     || currentChar == '=' || currentChar == '>' || currentChar == '!' || currentChar == '?' || isLetter(currentChar) ){
 
@@ -82,7 +122,7 @@ public class Scanner {
                        lex(F);
                    else
                        haveError = true;
-
+                    //Buraya da bi tane daha lex lazım??
                 }
 
                 if(haveError)
@@ -132,6 +172,7 @@ public class Scanner {
 
     //This function updates the global variable currentChar and keeps track of location
     public static void lex(FileReader F) throws IOException {
+        previousChar = currentChar;
         currentChar = (char) F.read();
 
 
