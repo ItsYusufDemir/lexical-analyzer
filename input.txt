@@ -1,0 +1,2 @@
+define '\u4562' let
+cons   fibonacci7
