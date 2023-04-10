@@ -1,1 +1,2 @@
-'c' '\' '\n' let define   heyo
+define '\u4562' let
+cons   fibonacci7

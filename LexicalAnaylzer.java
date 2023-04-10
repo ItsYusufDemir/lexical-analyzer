@@ -159,7 +159,156 @@ public class LexicalAnaylzer {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
             //NUMBER
+            else if(isDecDigit(currentChar) || currentChar == '+' || currentChar == '-' || currentChar == '.') {
+
+                tokenStartingColumn = column;
+
+                boolean isIdentifier = false;
+                boolean haveError = false;
+                currentToken += currentChar;
+
+                lex(F);
+                currentToken += currentChar;
+
+                //Checks if identifier exists eg if only one +
+                if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff') {
+
+                    if (previousChar == '.' || previousChar == '+' || previousChar == '-') {
+                        isIdentifier = true;
+                    }
+                }
+
+                //Checks for two consecutive transaction operators
+                if((previousChar == '+' && currentChar == '+') || (previousChar == '-' && currentChar == '+') ||
+                        (previousChar == '-' && currentChar == '-') || (previousChar == '+' && currentChar == '-') ) {
+                    haveError = true;
+                }
+
+                //Checks if the number starts with a dot
+                if(previousChar == '.') {
+                    haveError = true;
+                }
+
+                //If number is binary enters this block 0b...
+                if(previousChar == '0' && currentChar == 'b') {
+                    //binary devam ettir
+                    lex(F);
+                    currentToken += currentChar;
+                    while(true) {
+                        lex(F);
+                        if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff') {
+                            break;
+                        } else if(!isBinaryDigit(currentChar)) {
+                            currentToken += currentChar;
+                            haveError = true;
+                        } else if(isBinaryDigit(currentChar)) {
+                            currentToken += currentChar;
+                        }
+                    }
+                }
+
+                //If number is hexadecimal enters this block 0x...
+                else if(previousChar == '0' && currentChar == 'x') {
+                    //hex bitti
+                    lex(F);
+                    currentToken += currentChar;
+                    while(true) {
+                        lex(F);
+                        if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff') {
+                            break;
+                        } else if(!isHexDigit(currentChar)) {
+                            currentToken += currentChar;
+                            haveError = true;
+                        } else if(isHexDigit(currentChar)) {
+                            currentToken += currentChar;
+                        }
+                    }
+                }
+
+                //If number is decimal or float enters this block
+                else {
+
+                    while(true) {
+                        lex(F);
+
+                        //Checks for two consecutive transaction operators
+                        if((previousChar == '+' && currentChar == '+') || (previousChar == '-' && currentChar == '+') ||
+                                (previousChar == '-' && currentChar == '-') || (previousChar == '+' && currentChar == '-')) {
+                            haveError = true;
+                        }
+
+                        //Checks if the token has reached the end
+                        if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff') {
+                            //Checks for errors in e and transaction operators
+                            if (previousChar == 'e' || previousChar == 'E' || previousChar == '+' || previousChar == '-') {
+                                haveError = true;
+                            }
+                            break;
+                        }
+                        //Checks for errors in e and transaction operators example 334Ee+2, ++4536
+                        else if ((previousChar == 'E' && currentChar == 'e') || (previousChar == 'e' && currentChar == 'E') ||
+                                (previousChar == 'E' && currentChar == 'E') || (previousChar == 'E' && currentChar == 'E') ||
+                                (previousChar == 'E' && currentChar == '.') || (previousChar == '.' && currentChar == 'E') ||
+                                (previousChar == '.' && currentChar == '+') || (previousChar == '+' && currentChar == '.') ||
+                                (previousChar == '.' && currentChar == '-') || (previousChar == '-' && currentChar == '.')) {
+                            currentToken += currentChar;
+                            haveError = true;
+                        }
+                        else {
+                            currentToken += currentChar;
+                        }
+                        //Checks for errors in e and transaction operators example 432E+34E-2
+                        if (!isHaveOne(currentToken, '.') || !isHaveOne(currentToken, 'E') || !isHaveTwo(currentToken)) {
+                            haveError = true;
+                        }
+
+                    }
+                }
+
+                //Checks for errors in e example 354.42E-2
+                if((currentToken.contains("E") && currentToken.contains("."))) {
+                    if(currentToken.indexOf('E') < currentToken.indexOf('.')) {
+                        haveError = true;
+                    }
+                }
+
+                //Checks for errors in e example 354.42E-2
+                if((currentToken.contains("e") && currentToken.contains("."))) {
+                    if(currentToken.indexOf('e') < currentToken.indexOf('.')) {
+                        haveError = true;
+                    }
+                }
+
+                //Finally, it checks the token and acts accordingly
+                if (haveError) {
+                    printError(currentToken);
+                }
+                else if (isIdentifier) {
+                    printToken("IDENTIFIER");
+                }
+                else {
+                    printToken("NUMBER");
+                }
+
+                currentToken = ""; //Reset recording
+            }//number block end
+
+
+
+
+
 
 
 
@@ -265,6 +414,38 @@ public class LexicalAnaylzer {
     }
 
 
+    //Returns false if there is more than one given char in the String
+    public static boolean isHaveOne(String str, char ch) {
+        str = str.toUpperCase();
+        int count = 0;
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == ch) {
+                count++;
+            }
+        }
+
+        if(count > 1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    //Returns false if there is more than two + or - in the String.
+    public static boolean isHaveTwo(String str) {
+        int count = 0;
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == '+' || str.charAt(i) == '-') {
+                count++;
+            }
+        }
+
+        if(count > 2) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 }
 
