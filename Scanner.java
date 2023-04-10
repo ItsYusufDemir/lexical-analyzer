@@ -151,6 +151,17 @@ public class Scanner {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
             //NUMBER
             else if(isDecDigit(currentChar) || currentChar == '+' || currentChar == '-' || currentChar == '.') {
 
@@ -285,6 +296,12 @@ public class Scanner {
 
                 currentToken = ""; //Reset recording
             }//number block end
+
+
+
+
+
+
 
 
 
