@@ -1,5 +1,6 @@
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
 
 /* Authors: @erenduyuk, @selnaydinn and @ItsYusufDemir
@@ -9,7 +10,7 @@ import java.io.IOException;
  */
 
 
-public class Scanner {
+public class LexicalAnaylzer {
 
     //GLOBAL VARIABLES
     static char previousChar = ' ';
@@ -22,6 +23,11 @@ public class Scanner {
 
 
     public static void main(String[]args) throws IOException{
+
+        //Scanner input = new Scanner(System.in); HOCA FILE ISMINI KENDISI YAZCAKMIS EN SON BUNU KOYALIM
+        //String fileName = input.next();
+
+        //FileReader F=new FileReader(fileName);
 
         FileReader F=new FileReader("input.txt");
 
@@ -48,31 +54,33 @@ public class Scanner {
 
             /* CHAR READING
              *
-             * Char will be given in unicode like '\u1234'
+             * Char will be given like: 'c'    'd'   '\''   '\n' etc.
              */
             if(currentChar == '\''){
 
                 boolean haveError = false;
-                currentToken += currentChar;
+                currentToken += currentChar; //Start recording the token
                 lex(F);
 
-                while (currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r'){
+                while (currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r'){ //Read until space character
                     currentToken += currentChar;
                     lex(F);
                 }
 
-                if(currentToken.length() == 4){  //If we have '\''
-                    if(!(currentToken.charAt(0) == '\'' && currentToken.charAt(1) == '\\' && currentToken.charAt(2) == '\'' && currentToken.charAt(3) == '\''))
+                if(currentToken.length() == 3) {  //Case: 'c'
+                    if(currentToken.charAt(1) == ' ' || currentToken.charAt(1) == '\''){
                         haveError = true;
+                    }
                 }
-                else if (currentToken.length() == 8 ) {  //If we have '\u12345
-                    if(!(currentToken.charAt(0) == '\'' && currentToken.charAt(1) == '\\' && currentToken.charAt(2) == 'u' && isHexDigit(currentToken.charAt(3))
-                    && isHexDigit(currentToken.charAt(4)) && isHexDigit(currentToken.charAt(5)) && isHexDigit(currentToken.charAt(6)) && currentToken.charAt(7) == '\'' ))
+                else if(currentToken.length() == 4){  //Case: '\''   or   '\n'   or '\r'
+                    if(currentToken.charAt(1) != '\\')
                         haveError = true;
-                }
-                else
-                    haveError = true;
 
+                    if(!(currentToken.charAt(2) == 'n' || currentToken.charAt(2) == 'r'))
+                        haveError = true;
+                }
+                else //If the lenght is not 3 or 4, give error
+                    haveError = true;
 
                 if(haveError)
                     printError(currentToken);
@@ -103,7 +111,7 @@ public class Scanner {
 
             /* IDENTIFIER AND KEYWORDS
              *
-             * first read the token, than check if it is a keyword or not. If not, then print identifier.
+             * first read the token, then check if it is a keyword or not. If not, then print identifier.
              * If it is a keyword, then print its name.
              */
             if(currentChar == '!' || currentChar == '*' || currentChar == '/' || currentChar == ':' || currentChar == '<'
