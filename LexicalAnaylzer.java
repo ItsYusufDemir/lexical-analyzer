@@ -43,6 +43,30 @@ public class LexicalAnaylzer {
 
             //BRACKETS
 
+            if (currentChar == '(') {
+                printToken("LEFTPAR");
+                lex(F);
+            }
+            else if (currentChar == ')') {
+                printToken("RIGHTPAR");
+                lex(F);
+            }
+            else if (currentChar == '[') {
+                printToken("LEFTSQUAREB");
+                lex(F);
+            }
+            else if (currentChar == ']') {
+                printToken("RIGHTSQUAREB");
+                lex(F);
+            }
+            else if (currentChar == '{') {
+                printToken("LEFTCURLYB");
+                lex(F);
+            }
+            else if (currentChar == '}') {
+                printToken("RIGHTCURLYB");
+                lex(F);
+            }
 
 
 
@@ -131,6 +155,7 @@ public class LexicalAnaylzer {
                    else
                        haveError = true;
                     //Buraya da bi tane daha lex lazım??
+                    lex(F);
                 }
 
                 if(haveError)
