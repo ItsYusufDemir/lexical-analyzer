@@ -15,7 +15,7 @@ public class LexicalAnaylzer {
     static char previousChar = ' '; //previous char
     static char currentChar = ' ';  //current char
     static String currentToken = ""; //keeps current token
-    static int line = 0; //keeps line index of the token
+    static int line = 1; //keeps line index of the token
     static int column = 0; //keeps column index of the token
     static int tokenStartingColumn = 0;  //keeps starting column index of the token
 
@@ -44,6 +44,7 @@ public class LexicalAnaylzer {
             //BRACKETS
             if(isParenthesis(currentChar)) {   //If the current character is a parenthesis, enter this if
 
+                tokenStartingColumn = column;
                 currentToken += currentChar;
 
                 if (currentChar == '(') {
@@ -72,6 +73,7 @@ public class LexicalAnaylzer {
              */
             if(currentChar == '\''){ //if taken character is single quote which means data type is char
 
+                tokenStartingColumn = column;
                 boolean haveError = false;
                 currentToken += currentChar; //Start recording the token
                 lex(F); //read next character
@@ -113,6 +115,7 @@ public class LexicalAnaylzer {
             //                              "abc"\\e"
 
           if(currentChar == '\"') {  //if is starts with double quote
+              tokenStartingColumn = column;
               boolean haveError = false; //set error to false
               currentToken += currentChar; //start recording token
               lex(F); //read next char by using lex() method
@@ -345,7 +348,7 @@ public class LexicalAnaylzer {
 
 
         column++; //in each read of char, column index should be increased by one
-        if(currentChar == '\n' || currentChar == '\r'){  //if we go to new line
+        if((currentChar == '\n' || currentChar == '\r' ) && previousChar != '\r'){  //if we go to new line
             column = 0; //assign column index to 0 since it turns back to the beginning of the line
             line++;  //increase line index by 1
         }
@@ -392,14 +395,20 @@ public class LexicalAnaylzer {
 
     //Printing the error
     public static void printError(String token){
-        System.out.println("LEXICAL ERROR" + "[" + line + ":" + column + "]: Invalid token '" + token + "'");
+        if(currentChar == '\n' || currentChar == '\r')
+            System.out.println("LEXICAL ERROR" + "[" + (line-1) + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
+        else
+            System.out.println("LEXICAL ERROR" + "[" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
     }
 
 
 
     //Printing the token
     public static void printToken(String token){
-        System.out.println(token + " " + line + ":" + column );
+        if(currentChar == '\n' || currentChar == '\r')
+            System.out.println(token + " " + (line - 1) + ":" + tokenStartingColumn );
+        else
+            System.out.println(token + " " + line + ":" + tokenStartingColumn );
     }
 
 
