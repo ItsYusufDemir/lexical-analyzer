@@ -1,2 +1,7 @@
-let 3.54e-23)
-fibonacci (coms) (32)
+(define (fibonacci n)
+(let fib ([prev 0]
+[cur 1]
+[i 0])
+(if (= i n)
+cur
+(fib cur (+ prev cur) (+ i 1)))))
