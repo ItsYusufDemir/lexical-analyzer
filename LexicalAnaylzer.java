@@ -14,7 +14,7 @@ public class LexicalAnaylzer {
     //  ---GLOBAL VARIABLES---
     static char previousChar = ' '; //previous char
     static char currentChar = ' ';  //current char
-    static String currentToken = ""; //keeps current token
+    static String currentLexeme = ""; //keeps current token
     static int line = 1; //keeps line index of the token
     static int column = 0; //keeps column index of the token
     static int tokenStartingColumn = 0;  //keeps starting column index of the token
@@ -45,7 +45,7 @@ public class LexicalAnaylzer {
             if(isParenthesis(currentChar)) {   //If the current character is a parenthesis, enter this if
 
                 tokenStartingColumn = column;
-                currentToken += currentChar;
+                currentLexeme += currentChar;
 
                 if (currentChar == '(') {
                     printToken("LEFTPAR");
@@ -62,7 +62,7 @@ public class LexicalAnaylzer {
                 }
 
                 lex(F);
-                currentToken = "";
+                currentLexeme = "";
                 continue;
             }
 
@@ -75,37 +75,37 @@ public class LexicalAnaylzer {
 
                 tokenStartingColumn = column;
                 boolean haveError = false;
-                currentToken += currentChar; //Start recording the token
+                currentLexeme += currentChar; //Start recording the token
                 lex(F); //read next character
 
 
                 while (currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r' && !isParenthesis(currentChar)){ //Read until space character
-                    currentToken += currentChar;
+                    currentLexeme += currentChar;
                     lex(F);
 
                 }
 
-                if(currentToken.length() == 3) {  //Case: 'c'
-                    if(currentToken.charAt(1) == ' ' || currentToken.charAt(1) == '\''){
+                if(currentLexeme.length() == 3) {  //Case: 'c'
+                    if(currentLexeme.charAt(1) == ' ' || currentLexeme.charAt(1) == '\''){
                         haveError = true; //we have an error if it is ' ' or '''
                     }
                 }
-                else if(currentToken.length() == 4){  //Case: '\''   or   '\n'   or '\r'
-                    if(currentToken.charAt(1) != '\\')
+                else if(currentLexeme.length() == 4){  //Case: '\''   or   '\n'   or '\r'
+                    if(currentLexeme.charAt(1) != '\\')
                         haveError = true;
 
-                    if(!(currentToken.charAt(2) == 'n' || currentToken.charAt(2) == 'r'))
+                    if(!(currentLexeme.charAt(2) == 'n' || currentLexeme.charAt(2) == 'r'))
                         haveError = true; //we have an error if n or r don't come after \
                 }
                 else //If the length is not 3 or 4, give error
                     haveError = true;
 
                 if(haveError) //print error message
-                    printError(currentToken);
+                    printError(currentLexeme);
                 else //print token as char
                     printToken("CHAR");
 
-                currentToken = ""; //Reset recording
+                currentLexeme = ""; //Reset recording
                 continue;
             }
 
@@ -117,20 +117,20 @@ public class LexicalAnaylzer {
           if(currentChar == '\"') {  //if is starts with double quote
               tokenStartingColumn = column;
               boolean haveError = false; //set error to false
-              currentToken += currentChar; //start recording token
+              currentLexeme += currentChar; //start recording token
               lex(F); //read next char by using lex() method
               while (currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r') { //Read until space character
-                  currentToken += currentChar; //Continue recording the token
+                  currentLexeme += currentChar; //Continue recording the token
                   lex(F); //read next character until space or end of line or end of file
               }
 
-              if (currentToken.charAt(currentToken.length() - 1) == '\"') { //checking it ends with double quote
-                  for (int i = 1; i < currentToken.length() - 1; i++) { //checking token except quotes
-                      if (currentToken.charAt(i) == '\\' ) { //if currentChar is backslash character
-                          if (currentToken.charAt(i + 1) == '\"' && i != currentToken.length()-2) {
+              if (currentLexeme.charAt(currentLexeme.length() - 1) == '\"') { //checking it ends with double quote
+                  for (int i = 1; i < currentLexeme.length() - 1; i++) { //checking token except quotes
+                      if (currentLexeme.charAt(i) == '\\' ) { //if currentChar is backslash character
+                          if (currentLexeme.charAt(i + 1) == '\"' && i != currentLexeme.length()-2) {
                               //if next char is double quote and also check it is not the ending quote
                               haveError = false; //set error to false
-                          } else if (currentToken.charAt(i + 1) == '\\'  ) {
+                          } else if (currentLexeme.charAt(i + 1) == '\\'  ) {
                               //if next char is backslash too
                               haveError = false; //set error to false
                               i++; //increase i by one since not to check matching backslashes
@@ -144,11 +144,11 @@ public class LexicalAnaylzer {
                   haveError = true;
               }
               if (haveError == true) { //print token if error is occured
-                  printError(currentToken);
+                  printError(currentLexeme);
               } else {  //print STRING if error is not occured
                   printToken("STRING");
               }
-              currentToken = "";
+              currentLexeme = "";
             continue;
           }
 
@@ -163,13 +163,13 @@ public class LexicalAnaylzer {
                 tokenStartingColumn = column;
                 boolean haveError = false;  //initializing haveError
 
-                currentToken += currentChar; //Start recording the token
+                currentLexeme += currentChar; //Start recording the token
                 lex(F); //read next char inside lex() method
 
 
 
                 while(currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r' && !isParenthesis(currentChar)){
-                    currentToken += currentChar; //Continue recording
+                    currentLexeme += currentChar; //Continue recording
 
                    if(isLetter(currentChar) || isDecDigit(currentChar) || currentChar == '.' || currentChar == '+' || currentChar == '-')
                        lex(F);
@@ -181,16 +181,16 @@ public class LexicalAnaylzer {
                 }
 
                 if(haveError) //if an error is occured, print error message
-                    printError(currentToken);
+                    printError(currentLexeme);
                 else{
 
-                    if(isKeyword(currentToken)){  //checking token is a keyword or not
+                    if(isKeyword(currentLexeme)){  //checking token is a keyword or not
 
-                        if(isBoolean(currentToken)) //checking if  it is a boolean expression(true or false) which is
+                        if(isBoolean(currentLexeme)) //checking if  it is a boolean expression(true or false) which is
                             // also a keyword, as if print boolean
                             printToken("BOOLEAN");
                         else //otherwise it is a regular keyword, print token in uppercase
-                            printToken(currentToken.toUpperCase()); //
+                            printToken(currentLexeme.toUpperCase()); //
 
                     }
                     else{  //if it is none of above, it is an identifier
@@ -199,7 +199,7 @@ public class LexicalAnaylzer {
 
                 }
 
-                currentToken = ""; //Reset recording
+                currentLexeme = ""; //Reset recording
                 continue;
             }
 
@@ -212,13 +212,15 @@ public class LexicalAnaylzer {
                 boolean isIdentifier = false; //initializing isIdentifier and haveError as false
                 boolean haveError = false;
 
-                currentToken += currentChar; //starts recording the token
-                //previousChar = currentChar;
+                currentLexeme += currentChar; //starts recording the token
                 lex(F); //reads next char
-                currentToken += currentChar; //??????
+
+                if(!isParenthesis(currentChar)){
+                    currentLexeme += currentChar;
+                }
 
                 //checking currentToken consists of only +,-,., or a digit such as 0,1,2,3,4,5,6,7,8,9
-                if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff') {
+                if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff' || isParenthesis(currentChar)) {
                     //checking previous char if it consists of only one of the +,- or . signs; then it cannot be a number
                     //it can only be identifier
                     if (previousChar == '.' || previousChar == '+' || previousChar == '-') {
@@ -240,16 +242,16 @@ public class LexicalAnaylzer {
                 //If number is binary, enters this block: 0b...
                 if(previousChar == '0' && currentChar == 'b') {
                     lex(F); //reads next char //??????
-                    currentToken += currentChar; //continue recording token
+                    currentLexeme += currentChar; //continue recording token
                     while(true) {
                         lex(F); //continue reading next char
-                        if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff') {
+                        if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff' || isParenthesis(currentChar)) {
                             break; //stop the code if it is blank or new line
                         } else if(!isBinaryDigit(currentChar)) { //if it is not a binary digit there should be an error
-                            currentToken += currentChar; //keep recording token since we print it
+                            currentLexeme += currentChar; //keep recording token since we print it
                             haveError = true; //set error to true
                         } else if(isBinaryDigit(currentChar)) { //if it is a binary digit there is no error
-                            currentToken += currentChar; //keep recording token
+                            currentLexeme += currentChar; //keep recording token
                         }
                     }
                 }
@@ -257,23 +259,23 @@ public class LexicalAnaylzer {
                 //If number is hexadecimal enters this block: 0x...
                 else if(previousChar == '0' && currentChar == 'x') {
                     lex(F);
-                    currentToken += currentChar; //continue recording token
+                    currentLexeme += currentChar; //continue recording token
                     while(true) {
                         lex(F); //reads next char
-                        if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff') {
+                        if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff' || isParenthesis(currentChar)) {
                             break; //stop the code if it is blank or new line
                         } else if(!isHexDigit(currentChar)) { //if it is not a hexadecimal digit there should be an error
-                            currentToken += currentChar; //keep recording token since we print it
+                            currentLexeme += currentChar; //keep recording token since we print it
                             haveError = true; //set error to true
                         } else if(isHexDigit(currentChar)) { //if it is a hexadecimal digit
-                            currentToken += currentChar; //keep recording token
+                            currentLexeme += currentChar; //keep recording token
                         }
                     }
                 }
 
                 //If number is decimal or float enters this block
                 else {
-                    while(true) {
+                    while(true && !isParenthesis(currentChar) && !isIdentifier) {
                         lex(F); //reads next char
                         //Checks for two consecutive transaction operators
                         if((previousChar == '+' && currentChar == '+') || (previousChar == '-' && currentChar == '+') ||
@@ -282,7 +284,7 @@ public class LexicalAnaylzer {
                         }
 
                         //Checks if the token has reached the end
-                        if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff') {
+                        if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff' || isParenthesis(currentChar)) {
                             //Checks for errors in e and transaction operators
                             if (previousChar == 'e' || previousChar == 'E' || previousChar == '+' || previousChar == '-') {
                                 haveError = true;
@@ -295,14 +297,14 @@ public class LexicalAnaylzer {
                                 (previousChar == 'E' && currentChar == '.') || (previousChar == '.' && currentChar == 'E') ||
                                 (previousChar == '.' && currentChar == '+') || (previousChar == '+' && currentChar == '.') ||
                                 (previousChar == '.' && currentChar == '-') || (previousChar == '-' && currentChar == '.')) {
-                            currentToken += currentChar;
+                            currentLexeme += currentChar;
                             haveError = true;
                         }
                         else {
-                            currentToken += currentChar;
+                            currentLexeme += currentChar;
                         }
                         //Checks for errors in e and transaction operators example 432E+34E-2
-                        if (!isHaveOne(currentToken, '.') || !isHaveOne(currentToken, 'E') || !isHaveTwo(currentToken)) {
+                        if (!isHaveOne(currentLexeme, '.') || !isHaveOne(currentLexeme, 'E') || !isHaveTwo(currentLexeme)) {
                             haveError = true;
                         }
 
@@ -310,22 +312,22 @@ public class LexicalAnaylzer {
                 }
 
                 //Checks for errors in e example 354.42E-2
-                if((currentToken.contains("E") && currentToken.contains("."))) {
-                    if(currentToken.indexOf('E') < currentToken.indexOf('.')) {
+                if((currentLexeme.contains("E") && currentLexeme.contains("."))) {
+                    if(currentLexeme.indexOf('E') < currentLexeme.indexOf('.')) {
                         haveError = true;
                     }
                 }
 
                 //Checks for errors in e example 354.42e-2
-                if((currentToken.contains("e") && currentToken.contains("."))) {
-                    if(currentToken.indexOf('e') < currentToken.indexOf('.')) {
+                if((currentLexeme.contains("e") && currentLexeme.contains("."))) {
+                    if(currentLexeme.indexOf('e') < currentLexeme.indexOf('.')) {
                         haveError = true;
                     }
                 }
 
                 //Finally, it checks the token and acts accordingly
                 if (haveError) {
-                    printError(currentToken);
+                    printError(currentLexeme);
                 }
                 else if (isIdentifier) {
                     printToken("IDENTIFIER");
@@ -334,7 +336,7 @@ public class LexicalAnaylzer {
                     printToken("NUMBER");
                 }
 
-                currentToken = ""; //Reset recording
+                currentLexeme = ""; //Reset recording
             }//number block end
         }
 
@@ -405,10 +407,15 @@ public class LexicalAnaylzer {
 
     //Printing the token
     public static void printToken(String token){
+
         if(currentChar == '\n' || currentChar == '\r')
             System.out.println(token + " " + (line - 1) + ":" + tokenStartingColumn );
         else
             System.out.println(token + " " + line + ":" + tokenStartingColumn );
+
+
+
+        //System.out.println(currentLexeme);
     }
 
 
