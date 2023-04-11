@@ -1,6 +1,5 @@
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Scanner;
 
 
 /* Authors: @erenduyuk, @selnaydinn and @ItsYusufDemir
@@ -42,30 +41,27 @@ public class LexicalAnaylzer {
 
 
             //BRACKETS
+            if(isParenthesis(currentChar)) {   //If the current character is a parenthesis, enter this if
 
-            if (currentChar == '(') {
-                printToken("LEFTPAR");
+                currentToken += currentChar;
+
+                if (currentChar == '(') {
+                    printToken("LEFTPAR");
+                } else if (currentChar == ')') {
+                    printToken("RIGHTPAR");
+                } else if (currentChar == '[') {
+                    printToken("LEFTSQUAREB");
+                } else if (currentChar == ']') {
+                    printToken("RIGHTSQUAREB");
+                } else if (currentChar == '{') {
+                    printToken("LEFTCURLYB");
+                } else if (currentChar == '}') {
+                    printToken("RIGHTCURLYB");
+                }
+
                 lex(F);
-            }
-            else if (currentChar == ')') {
-                printToken("RIGHTPAR");
-                lex(F);
-            }
-            else if (currentChar == '[') {
-                printToken("LEFTSQUAREB");
-                lex(F);
-            }
-            else if (currentChar == ']') {
-                printToken("RIGHTSQUAREB");
-                lex(F);
-            }
-            else if (currentChar == '{') {
-                printToken("LEFTCURLYB");
-                lex(F);
-            }
-            else if (currentChar == '}') {
-                printToken("RIGHTCURLYB");
-                lex(F);
+                currentToken = "";
+                continue;
             }
 
 
@@ -86,7 +82,7 @@ public class LexicalAnaylzer {
                 currentToken += currentChar; //Start recording the token
                 lex(F);
 
-                while (currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r'){ //Read until space character
+                while (currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r' && !isParenthesis(currentChar)){ //Read until space character
                     currentToken += currentChar;
                     lex(F);
                 }
@@ -147,15 +143,15 @@ public class LexicalAnaylzer {
                 currentToken += currentChar; //Start recording the token
                 lex(F);
 
-                while(currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r'){
+                while(currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r' && !isParenthesis(currentChar)){
                     currentToken += currentChar; //Continue recording
 
                    if(isLetter(currentChar) || isDecDigit(currentChar) || currentChar == '.' || currentChar == '+' || currentChar == '-')
                        lex(F);
-                   else
+                   else {
                        haveError = true;
-                    //Buraya da bi tane daha lex lazım??
-                    lex(F);
+                       lex(F);
+                   }
                 }
 
                 if(haveError)
@@ -470,6 +466,14 @@ public class LexicalAnaylzer {
         } else {
             return true;
         }
+    }
+
+
+    public static boolean isParenthesis(char c){
+        if(c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}')
+            return true;
+        else
+            return false;
     }
 
 }
