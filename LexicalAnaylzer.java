@@ -123,48 +123,64 @@ public class LexicalAnaylzer {
               currentLexeme += currentChar; //Record the lexeme
               lex(F); //read next char by using lex() method
 
-              while ( (currentChar != '\uFFFF' && currentChar == '\"' && previousChar== '\\') || (currentChar != '\"' &&  currentChar != '\uFFFF')){  //Read until space character
-                  currentLexeme += currentChar; //Continue recording the token
-                  lex(F); //read next character until space or end of line or end of file
+              while ( (currentChar != '\uFFFF' && currentChar == '\"' && previousChar== '\\') || (currentChar != '\"' &&  currentChar != '\uFFFF')){
+                  //if currentChar is double quote,previousChar is backslash and it is not end of the file continue while loop
+                  //or if currentChar is something but double quote and it is not end of the file continue while loop
+                  currentLexeme += currentChar; //continue recording token
+                  lex(F); //read next char
               }
-              if(currentChar ==  '\"') {
-                  currentLexeme = currentLexeme + '\"';
-              }else {
+              if(currentChar ==  '\"') { //if the last char is double quote
+                  currentLexeme = currentLexeme + '\"'; //add double quote to token's end
+              }else {  //if token is not ending with a double quote, set error to true
                   haveError = true;
               }
 
-              if (currentLexeme.charAt(currentLexeme.length() - 1) == '\"') {
+              if (currentLexeme.charAt(currentLexeme.length() - 1) == '\"') { //if the last char is double quote continue this block
                   for (int i = 1; i < currentLexeme.length() - 1; i++) {
-                      if (currentLexeme.charAt(i) == '\\' ) {
-                          if (currentLexeme.charAt(i + 1) == '\"' && i != currentLexeme.length()-2) {
+                      if (currentLexeme.charAt(i) == '\\' ) { //if current char is backslash character
+                          if (currentLexeme.charAt(i + 1) == '\"' && i != currentLexeme.length()-2) { //if next character is a double quote, set error to false
                               haveError = false;
-                          } else if (currentLexeme.charAt(i + 1) == '\\'  ) {
+                          } else if (currentLexeme.charAt(i + 1) == '\\'  ) { //if next character also a backslash, set error to false and increase i by one not to check second matching backslash
                               haveError = false;
                               i++;
                           }
-                          else if (currentLexeme.charAt(i+1) == '\n' || currentLexeme.charAt(i+1) == '\t' || currentLexeme.charAt(i+1) == '\r') {
+                          else if (currentLexeme.charAt(i+1) == 'n' || currentLexeme.charAt(i+1) == 't' || currentLexeme.charAt(i+1) == 'r') {
+                              //if the next character is \n \t or \r , set error to false
                               haveError = false;
                           }
-                          else {
+                          else { //otherwise set error to true
                               haveError = true;
                           }
                       }
                   }
               }
 
-              else {
-                  haveError = true;
-              }
-              if (haveError == true) {
+              if (haveError == true) { //if it has error, print token
                   printError(currentLexeme);
               } else {
-                  printToken("STRING");
+                  printToken("STRING"); //if it hasnot error, print STRING
               }
-              currentLexeme = "";
-              lex(F);
-              continue;
+              currentLexeme = ""; //set current token to blank
+              lex(F); //read next token since we add double quote above
+              continue; //continue the code
           }
 
+
+
+            //COMMENT reading
+            //comments start with tilde(~) and continue to the end of the line
+            //scanner must ignore comments
+            if(currentChar == '~'){ //if currentChar is tilde
+                boolean haveError = false;
+                currentLexeme += currentChar; //Record the lexeme
+                lex(F); //read next character
+                while(currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r') { //if it is not end of the line
+                    currentLexeme += currentChar; //continue recording
+                    lex(F); //read next char
+                }
+                currentLexeme = ""; //Reset recording
+                continue;
+            }
 
 
 

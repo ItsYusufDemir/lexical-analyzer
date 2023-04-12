@@ -4,4 +4,5 @@
            [i 0])
    (if (= i n)
        cur
-       (fib cur (+ prev cur) (+ i 1))))) (let define "deneme")
+       (fib cur (+ prev cur) (+ i 1))))) (let define "den\reme\n") ~yorum yapıyoruuum
+       (let)
