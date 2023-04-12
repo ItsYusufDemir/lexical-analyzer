@@ -10,7 +10,7 @@ import java.io.IOException;
  * 
  * Description: Making a simple lexical analyzer..
  */
-
+int;
 
 public class LexicalAnaylzer {
 
