@@ -234,10 +234,7 @@ public class LexicalAnaylzer {
                     haveError = true;
                 }
 
-                //Checks if the number starts with a dot, set error to true
-                if(previousChar == '.') {
-                    haveError = true;
-                }
+
 
                 //If number is binary, enters this block: 0b...
                 if(previousChar == '0' && currentChar == 'b') {
