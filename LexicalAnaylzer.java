@@ -118,7 +118,6 @@ public class LexicalAnaylzer {
             //                              "abc"\\e"
 
           if(currentChar == '\"') {  //if is starts with double quote
-
               tokenStartingColumn = column; //Record its starting column for potential usage
               boolean haveError = false; //set error to false
               currentLexeme += currentChar; //Record the lexeme
@@ -133,7 +132,6 @@ public class LexicalAnaylzer {
               }else {
                   haveError = true;
               }
-              System.out.println(currentLexeme);
 
               if (currentLexeme.charAt(currentLexeme.length() - 1) == '\"') {
                   for (int i = 1; i < currentLexeme.length() - 1; i++) {
@@ -153,6 +151,7 @@ public class LexicalAnaylzer {
                       }
                   }
               }
+
               else {
                   haveError = true;
               }
@@ -162,7 +161,7 @@ public class LexicalAnaylzer {
                   printToken("STRING");
               }
               currentLexeme = "";
-
+              lex(F);
               continue;
           }
 
