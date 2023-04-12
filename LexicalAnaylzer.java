@@ -8,7 +8,7 @@ import java.io.IOException;
  *
  * Date: 8.04.2023 10:42
  * 
- * Description: Making a simple lexical analyzer.
+ * Description: Making a simple lexical analyzer..
  */
 
 
