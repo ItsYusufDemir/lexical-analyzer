@@ -124,37 +124,45 @@ public class LexicalAnaylzer {
               currentLexeme += currentChar; //Record the lexeme
               lex(F); //read next char by using lex() method
 
-              while (currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r') { //Read until space character
+              while ( (currentChar != '\uFFFF' && currentChar == '\"' && previousChar== '\\') || (currentChar != '\"' &&  currentChar != '\uFFFF')){  //Read until space character
                   currentLexeme += currentChar; //Continue recording the token
                   lex(F); //read next character until space or end of line or end of file
               }
+              if(currentChar ==  '\"') {
+                  currentLexeme = currentLexeme + '\"';
+              }else {
+                  haveError = true;
+              }
+              System.out.println(currentLexeme);
 
-              if (currentLexeme.charAt(currentLexeme.length() - 1) == '\"') { //checking it ends with double quote
-                  for (int i = 1; i < currentLexeme.length() - 1; i++) { //checking token except quotes
-                      if (currentLexeme.charAt(i) == '\\' ) { //if currentChar is backslash character
+              if (currentLexeme.charAt(currentLexeme.length() - 1) == '\"') {
+                  for (int i = 1; i < currentLexeme.length() - 1; i++) {
+                      if (currentLexeme.charAt(i) == '\\' ) {
                           if (currentLexeme.charAt(i + 1) == '\"' && i != currentLexeme.length()-2) {
-                              //if next char is double quote and also check it is not the ending quote
-                              haveError = false; //set error to false
+                              haveError = false;
                           } else if (currentLexeme.charAt(i + 1) == '\\'  ) {
-                              //if next char is backslash too
-                              haveError = false; //set error to false
-                              i++; //increase i by one since not to check matching backslashes
-                          } else { //if there is no quote or backslash after the first backslash then there will be an error
-                              haveError = true; //set error to true
+                              haveError = false;
+                              i++;
+                          }
+                          else if (currentLexeme.charAt(i+1) == '\n' || currentLexeme.charAt(i+1) == '\t' || currentLexeme.charAt(i+1) == '\r') {
+                              haveError = false;
+                          }
+                          else {
+                              haveError = true;
                           }
                       }
                   }
               }
-              else {   //if it doesn't end with double quote it is incorrect
+              else {
                   haveError = true;
               }
-              if (haveError == true) { //print token if error is occurred
+              if (haveError == true) {
                   printError(currentLexeme);
-              } else {  //print STRING if error is not occurred
+              } else {
                   printToken("STRING");
               }
-
               currentLexeme = "";
+
               continue;
           }
 
