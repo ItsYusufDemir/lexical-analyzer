@@ -7,7 +7,7 @@ import java.io.IOException;
  *          Yusuf Demir - 150120032
  *
  * Date: 8.04.2023 10:42
- * 
+ *
  * Description: Making a simple lexical analyzer.
  */
 
@@ -32,7 +32,6 @@ public class LexicalAnaylzer {
         //FileReader F=new FileReader(fileName);
 
         FileReader F =new FileReader("input.txt");  //reading file by using FileReader
-        lex(F);
 
         while(currentChar != '\uffff') {  //.read() method that we use inside the lex() method returns -1 while
             //there is no more character in the input file
@@ -118,54 +117,70 @@ public class LexicalAnaylzer {
             //                              "abc"def"
             //                              "abc"\\e"
 
-          if(currentChar == '\"') {  //if is starts with double quote
-              tokenStartingColumn = column; //Record its starting column for potential usage
-              boolean haveError = false; //set error to false
-              currentLexeme += currentChar; //Record the lexeme
-              lex(F); //read next char by using lex() method
+            if(currentChar == '\"') {  //if is starts with double quote
+                tokenStartingColumn = column; //Record its starting column for potential usage
+                boolean haveError = false; //set error to false
+                currentLexeme += currentChar; //Record the lexeme
+                lex(F); //read next char by using lex() method
 
-              while ( (currentChar != '\uFFFF' && currentChar == '\"' && previousChar== '\\') || (currentChar != '\"' &&  currentChar != '\uFFFF')){  //Read until space character
-                  currentLexeme += currentChar; //Continue recording the token
-                  lex(F); //read next character until space or end of line or end of file
-              }
-              if(currentChar ==  '\"') {
-                  currentLexeme = currentLexeme + '\"';
-              }else {
-                  haveError = true;
-              }
+                while ( (currentChar != '\uFFFF' && currentChar == '\"' && previousChar== '\\') || (currentChar != '\"' &&  currentChar != '\uFFFF')){
+                    //if currentChar is double quote,previousChar is backslash and it is not end of the file continue while loop
+                    //or if currentChar is something but double quote and it is not end of the file continue while loop
+                    currentLexeme += currentChar; //continue recording token
+                    lex(F); //read next char
+                }
+                if(currentChar ==  '\"') { //if the last char is double quote
+                    currentLexeme = currentLexeme + '\"'; //add double quote to token's end
+                }else {  //if token is not ending with a double quote, set error to true
+                    haveError = true;
+                }
 
-              if (currentLexeme.charAt(currentLexeme.length() - 1) == '\"') {
-                  for (int i = 1; i < currentLexeme.length() - 1; i++) {
-                      if (currentLexeme.charAt(i) == '\\' ) {
-                          if (currentLexeme.charAt(i + 1) == '\"' && i != currentLexeme.length()-2) {
-                              haveError = false;
-                          } else if (currentLexeme.charAt(i + 1) == '\\'  ) {
-                              haveError = false;
-                              i++;
-                          }
-                          else if (currentLexeme.charAt(i+1) == '\n' || currentLexeme.charAt(i+1) == '\t' || currentLexeme.charAt(i+1) == '\r') {
-                              haveError = false;
-                          }
-                          else {
-                              haveError = true;
-                          }
-                      }
-                  }
-              }
+                if (currentLexeme.charAt(currentLexeme.length() - 1) == '\"') { //if the last char is double quote continue this block
+                    for (int i = 1; i < currentLexeme.length() - 1; i++) {
+                        if (currentLexeme.charAt(i) == '\\' ) { //if current char is backslash character
+                            if (currentLexeme.charAt(i + 1) == '\"' && i != currentLexeme.length()-2) { //if next character is a double quote, set error to false
+                                haveError = false;
+                            } else if (currentLexeme.charAt(i + 1) == '\\'  ) { //if next character also a backslash, set error to false and increase i by one not to check second matching backslash
+                                haveError = false;
+                                i++;
+                            }
+                            else if (currentLexeme.charAt(i+1) == 'n' || currentLexeme.charAt(i+1) == 't' || currentLexeme.charAt(i+1) == 'r') {
+                                //if the next character is \n \t or \r , set error to false
+                                haveError = false;
+                            }
+                            else { //otherwise set error to true
+                                haveError = true;
+                            }
+                        }
+                    }
+                }
 
-              else {
-                  haveError = true;
-              }
-              if (haveError == true) {
-                  printError(currentLexeme);
-              } else {
-                  printToken("STRING");
-              }
-              currentLexeme = "";
-              lex(F);
-              continue;
-          }
+                if (haveError == true) { //if it has error, print token
+                    printError(currentLexeme);
+                } else {
+                    printToken("STRING"); //if it hasnot error, print STRING
+                }
+                currentLexeme = ""; //set current token to blank
+                lex(F); //read next token since we add double quote abovee
+                continue; //continue the code
+            }
 
+
+
+            //COMMENT reading
+            //comments start with tilde(~) and continue to the end of the line
+            //scanner must ignore comments
+            if(currentChar == '~'){ //if currentChar is tilde
+                boolean haveError = false;
+                currentLexeme += currentChar; //Record the lexeme
+                lex(F); //read next character
+                while(currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r') { //if it is not end of the line
+                    currentLexeme += currentChar; //continue recording
+                    lex(F); //read next char
+                }
+                currentLexeme = ""; //Reset recording
+                continue;
+            }
 
 
 
@@ -177,7 +192,7 @@ public class LexicalAnaylzer {
              */
             if(currentChar == '!' || currentChar == '*' || currentChar == '/' || currentChar == ':' || currentChar == '<'
                     || currentChar == '=' || currentChar == '>' || currentChar == '!' || currentChar == '?' || isLetter(currentChar) ){
-              //current char can be one of above
+                //current char can be one of above
 
                 tokenStartingColumn = column; //Record its starting column for potential usage
                 boolean haveError = false;  //initializing haveError
@@ -189,12 +204,12 @@ public class LexicalAnaylzer {
                 while(currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r' && !isParenthesis(currentChar)){
                     currentLexeme += currentChar; //Continue recording
 
-                   if(isLetter(currentChar) || isDecDigit(currentChar) || currentChar == '.' || currentChar == '+' || currentChar == '-')
-                       lex(F);
-                   else {
-                       haveError = true;
-                       lex(F);
-                   }
+                    if(isLetter(currentChar) || isDecDigit(currentChar) || currentChar == '.' || currentChar == '+' || currentChar == '-')
+                        lex(F);
+                    else {
+                        haveError = true;
+                        lex(F);
+                    }
 
                 }
 
@@ -363,8 +378,8 @@ public class LexicalAnaylzer {
         previousChar = currentChar; //assign value of current char to previous char
         currentChar = (char) F.read(); //update current char by reading file
 
-        if(currentChar != '\n')
-            column++; //in each read of char, column index should be increased by one
+
+        column++; //in each read of char, column index should be increased by one
         if((currentChar == '\n' || currentChar == '\r' ) && previousChar != '\r'){  //if we go to new line
             column = 0; //assign column index to 0 since it turns back to the beginning of the line
             line++;  //increase line index by 1
@@ -449,7 +464,7 @@ public class LexicalAnaylzer {
     }
 
 
-   //This method checks token is a boolean expression or not
+    //This method checks token is a boolean expression or not
     public static boolean isBoolean(String token){
         if(token.equals("true") || token.equals("false"))
             return true;
@@ -500,4 +515,3 @@ public class LexicalAnaylzer {
     }
 
 }
-
