@@ -4,4 +4,4 @@
            [i 0])
    (if (= i n)
        cur
-       (fib cur (+ prev cur) (+ i 1))))) "MerhababenSelin"
+       (fib cur (+ prev cur) (+ i 1)))))

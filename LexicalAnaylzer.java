@@ -2,10 +2,13 @@ import java.io.FileReader;
 import java.io.IOException;
 
 
-/* Authors: @erenduyuk, @selnaydinn and @ItsYusufDemir
+/* Authors: Eren Duyuk - 150120509
+ *          Selin Aydın - 150120061
+ *          Yusuf Demir - 150120032
+ *
  * Date: 8.04.2023 10:42
  * 
- * Description: Making a simple lexical analyzer
+ * Description: Making a simple lexical analyzer.
  */
 
 
@@ -42,10 +45,10 @@ public class LexicalAnaylzer {
 
 
             //BRACKETS
-            if(isParenthesis(currentChar)) {   //If the current character is a parenthesis, enter this if
+            if(isParenthesis(currentChar)) {   //If the current character is a parenthesis, enter this if statement
 
-                tokenStartingColumn = column;
-                currentLexeme += currentChar;
+                tokenStartingColumn = column;  //Record its starting column for potential usage
+                currentLexeme += currentChar;  //Record the lexeme
 
                 if (currentChar == '(') {
                     printToken("LEFTPAR");
@@ -73,9 +76,9 @@ public class LexicalAnaylzer {
              */
             if(currentChar == '\''){ //if taken character is single quote which means data type is char
 
-                tokenStartingColumn = column;
+                tokenStartingColumn = column; //Record its starting column for potential usage
                 boolean haveError = false;
-                currentLexeme += currentChar; //Start recording the token
+                currentLexeme += currentChar; //Record the lexeme
                 lex(F); //read next character
 
 
@@ -102,7 +105,7 @@ public class LexicalAnaylzer {
 
                 if(haveError) //print error message
                     printError(currentLexeme);
-                else //print token as char
+                else //print token as CHAR
                     printToken("CHAR");
 
                 currentLexeme = ""; //Reset recording
@@ -115,10 +118,12 @@ public class LexicalAnaylzer {
             //                              "abc"\\e"
 
           if(currentChar == '\"') {  //if is starts with double quote
-              tokenStartingColumn = column;
+
+              tokenStartingColumn = column; //Record its starting column for potential usage
               boolean haveError = false; //set error to false
-              currentLexeme += currentChar; //start recording token
+              currentLexeme += currentChar; //Record the lexeme
               lex(F); //read next char by using lex() method
+
               while (currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r') { //Read until space character
                   currentLexeme += currentChar; //Continue recording the token
                   lex(F); //read next character until space or end of line or end of file
@@ -143,27 +148,32 @@ public class LexicalAnaylzer {
               else {   //if it doesn't end with double quote it is incorrect
                   haveError = true;
               }
-              if (haveError == true) { //print token if error is occured
+              if (haveError == true) { //print token if error is occurred
                   printError(currentLexeme);
-              } else {  //print STRING if error is not occured
+              } else {  //print STRING if error is not occurred
                   printToken("STRING");
               }
+
               currentLexeme = "";
-            continue;
+              continue;
           }
+
+
+
+
 
             /* IDENTIFIER AND KEYWORDS
              *
-             * first read the token, then check if it is a keyword or not. If not, then print identifier.
+             * First read the lexeme, then check if it is a keyword or not. If not, then print IDENTIFIER.
              * If it is a keyword, then print its name.
              */
             if(currentChar == '!' || currentChar == '*' || currentChar == '/' || currentChar == ':' || currentChar == '<'
                     || currentChar == '=' || currentChar == '>' || currentChar == '!' || currentChar == '?' || isLetter(currentChar) ){
               //current char can be one of above
-                tokenStartingColumn = column;
-                boolean haveError = false;  //initializing haveError
 
-                currentLexeme += currentChar; //Start recording the token
+                tokenStartingColumn = column; //Record its starting column for potential usage
+                boolean haveError = false;  //initializing haveError
+                currentLexeme += currentChar; //Start recording the lexeme
                 lex(F); //read next char inside lex() method
 
 
@@ -180,14 +190,14 @@ public class LexicalAnaylzer {
 
                 }
 
-                if(haveError) //if an error is occured, print error message
+                if(haveError) //If an error is occurred, print error message
                     printError(currentLexeme);
                 else{
 
-                    if(isKeyword(currentLexeme)){  //checking token is a keyword or not
+                    if(isKeyword(currentLexeme)){  //checking lexeme is a keyword or not
 
                         if(isBoolean(currentLexeme)) //checking if  it is a boolean expression(true or false) which is
-                            // also a keyword, as if print boolean
+                            // also a keyword, if it is: print BOOLEAN
                             printToken("BOOLEAN");
                         else //otherwise it is a regular keyword, print token in uppercase
                             printToken(currentLexeme.toUpperCase()); //
@@ -394,7 +404,7 @@ public class LexicalAnaylzer {
 
     //Printing the error
     public static void printError(String token){
-        if(currentChar == '\n' || currentChar == '\r')
+        if(currentChar == '\n' || currentChar == '\r') //If after the token is new line, than line is: line -1 (since it is incremented by 1)
             System.out.println("LEXICAL ERROR" + "[" + (line-1) + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
         else
             System.out.println("LEXICAL ERROR" + "[" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
@@ -404,6 +414,7 @@ public class LexicalAnaylzer {
 
     //Printing the token
     public static void printToken(String token){
+
 
         if(currentChar == '\n' || currentChar == '\r')
             System.out.println(token + " " + (line - 1) + ":" + tokenStartingColumn );
@@ -432,7 +443,6 @@ public class LexicalAnaylzer {
 
    //This method checks token is a boolean expression or not
     public static boolean isBoolean(String token){
-
         if(token.equals("true") || token.equals("false"))
             return true;
         else
