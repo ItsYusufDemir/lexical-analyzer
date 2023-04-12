@@ -161,7 +161,7 @@ public class LexicalAnaylzer {
                   printToken("STRING"); //if it hasnot error, print STRING
               }
               currentLexeme = ""; //set current token to blank
-              lex(F); //read next token since we add double quote above
+              lex(F); //read next token since we add double quote abovee
               continue; //continue the code
           }
 
