@@ -418,6 +418,7 @@ public class LexicalAnaylzer {
     //Printing the token
     public static void printToken(String token){
 
+
         if(currentChar == '\n' || currentChar == '\r')
             System.out.println(token + " " + (line - 1) + ":" + tokenStartingColumn );
         else
