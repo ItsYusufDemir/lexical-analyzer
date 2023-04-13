@@ -306,6 +306,16 @@ public class LexicalAnaylzer {
                 //If number is decimal or float enters this block
                 else {
                     while(true && !isParenthesis(currentChar) && !isIdentifier) {
+                        if(!(isDecDigit(currentChar) || currentChar == '+' || currentChar == '-' || currentChar == '.' || currentChar == 'e' || currentChar == 'E')) {
+                            haveError = true;
+                            while(true) {
+                                lex(F); //reads next char
+                                currentLexeme += currentChar;
+                                if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff' || isParenthesis(currentChar)) {
+                                    break; //stop the code if it is blank or new line
+                                }
+                            }
+                        }
                         lex(F); //reads next char
                         //Checks for two consecutive transaction operators
                         if((previousChar == '+' && currentChar == '+') || (previousChar == '-' && currentChar == '+') ||
