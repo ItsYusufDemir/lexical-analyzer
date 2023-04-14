@@ -2,6 +2,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 
 /* Authors: Eren Duyuk - 150120509
@@ -23,8 +24,9 @@ public class LexicalAnaylzer {
     static int line = 1; //keeps line index of the token
     static int column = 0; //keeps column index of the token
     static int tokenStartingColumn = 0;  //keeps starting column index of the token
+    static FileReader F;
 
-    static FileWriter file; //defining global variable file
+    static FileWriter file; //defining global variable file that keeps the output
 
     static {
         try {  //try-catch block for catching file is not found error
@@ -34,26 +36,28 @@ public class LexicalAnaylzer {
         }
     }
 
-    static FileReader F;
 
-    static {
-        try {
-            F = new FileReader("input.txt");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 
     public static void main(String[]args) throws IOException{
 
-        //Scanner input = new Scanner(System.in); HOCA FILE ISMINI KENDISI YAZCAKMIS EN SON BUNU KOYALIM
-        //String fileName = input.next();
 
-        //FileReader F=new FileReader(fileName);
+        //TAKING THE FILE NAME
+        Scanner input = new Scanner(System.in);
+        System.out.println("Enter the file name (ex. input1.txt) : ");
+        String fileName = input.next(); //Taking the file name
 
-        FileReader F =new FileReader("input.txt");  //reading file by using FileReader;
+        try {
+            F = new FileReader(fileName);  //reading file by using FileReader;
+        }
+        catch (FileNotFoundException e){
+            System.out.println("File couldn't found! Please check your file and file name.");
+            System.exit(0);
+        }
 
+
+
+        // THIS IS THE BIG WHILE LOOP. EVERYTHING IS READ HERE
         while(currentChar != '\uffff') {  //.read() method that we use inside the lex() method returns -1 while
             //there is no more character in the input file
             // -1 is considered as \uffff  when it is type cast to char
@@ -65,7 +69,7 @@ public class LexicalAnaylzer {
             }
 
 
-            //BRACKETS
+            //BRACKET READING
             if(isParenthesis(currentChar)) {   //If the current character is a parenthesis, enter this if statement
 
                 tokenStartingColumn = column;  //Record its starting column for potential usage
@@ -133,11 +137,14 @@ public class LexicalAnaylzer {
                 continue;
             }
 
-            //STRING
-            // not correct string examples: "ab\\\cd"
-            //                              "abc"def"
-            //                              "abc"\\e"
 
+
+
+            /*STRING READING
+            * Not correct string examples: "ab\\\cd"
+            *                              "abc"def"
+            *                              "abc"\\e"
+            */
             if(currentChar == '\"') {  //if is starts with double quote
                 tokenStartingColumn = column; //Record its starting column for potential usage
                 boolean haveError = false; //set error to false
@@ -188,9 +195,10 @@ public class LexicalAnaylzer {
 
 
 
-            //COMMENT reading
-            //comments start with tilde(~) and continue to the end of the line
-            //scanner must ignore comments
+            /* COMMENT READING
+             * Comments start with tilde(~) and continue to the end of the line
+             * Scanner must ignore comments
+             */
             if(currentChar == '~'){ //if currentChar is tilde
                 boolean haveError = false;
                 currentLexeme += currentChar; //Record the lexeme
@@ -247,7 +255,7 @@ public class LexicalAnaylzer {
                             // also a keyword, if it is: print BOOLEAN
                             printToken("BOOLEAN");
                         else //otherwise it is a regular keyword, print token in uppercase
-                            printToken(currentLexeme.toUpperCase()); //
+                            printToken(findUpperCase(currentLexeme)); //
 
                     }
                     else{  //if it is none of above, it is an identifier
@@ -261,7 +269,7 @@ public class LexicalAnaylzer {
             }
 
 
-            //NUMBER
+            //NUMBER READING
             else if(isDecDigit(currentChar) || currentChar == '+' || currentChar == '-' || currentChar == '.') {
                 //checking weather currentChar starts with a digit, '+', '-' or '.' signs
                 tokenStartingColumn = column;
@@ -403,7 +411,10 @@ public class LexicalAnaylzer {
 
                 currentLexeme = ""; //Reset recording
             }//number block end
-        }
+
+        }//big while loop end
+
+
         F.close();
         file.close();
     }
@@ -559,4 +570,17 @@ public class LexicalAnaylzer {
             return false;
     }
 
+    /* String.toUpperCase depends on the language of a system.
+     * For example, define might be converted to DEFİNE in Turkish language. So we create our own function.
+     */
+    public static String findUpperCase(String str){
+
+        switch (str){
+            case "define": return "DEFINE";
+            case "let": return "LET";
+            case "cond": return "COND";
+            case "if": return "IF";
+            default: return "BEGIN";
+        }
+    }
 }
