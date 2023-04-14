@@ -414,8 +414,8 @@ public class LexicalAnaylzer {
         previousChar = currentChar; //assign value of current char to previous char
         currentChar = (char) F.read(); //update current char by reading file
 
-
-        column++; //in each read of char, column index should be increased by one
+        if(currentChar != '\n')
+            column++; //in each read of char, column index should be increased by one
         if((currentChar == '\n' || currentChar == '\r' ) && previousChar != '\r'){  //if we go to new line
             column = 0; //assign column index to 0 since it turns back to the beginning of the line
             line++;  //increase line index by 1
