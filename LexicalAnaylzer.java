@@ -1,4 +1,5 @@
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 
@@ -22,6 +23,15 @@ public class LexicalAnaylzer {
     static int column = 0; //keeps column index of the token
     static int tokenStartingColumn = 0;  //keeps starting column index of the token
 
+    static FileWriter file; //defining global variable file
+
+    static {
+        try {  //try-catch block for catching file is not found error
+            file = new FileWriter("output.txt");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     public static void main(String[]args) throws IOException{
@@ -31,7 +41,7 @@ public class LexicalAnaylzer {
 
         //FileReader F=new FileReader(fileName);
 
-        FileReader F =new FileReader("input.txt");  //reading file by using FileReader
+        FileReader F =new FileReader("input.txt");  //reading file by using FileReader;
 
         while(currentChar != '\uffff') {  //.read() method that we use inside the lex() method returns -1 while
             //there is no more character in the input file
@@ -369,7 +379,8 @@ public class LexicalAnaylzer {
                 currentLexeme = ""; //Reset recording
             }//number block end
         }
-
+        F.close();
+        file.close();
     }
 
 
@@ -426,25 +437,31 @@ public class LexicalAnaylzer {
 
 
     //Printing the error
-    public static void printError(String token){
-        if(currentChar == '\n' || currentChar == '\r') //If after the token is new line, than line is: line -1 (since it is incremented by 1)
-            System.out.println("LEXICAL ERROR" + "[" + (line-1) + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
-        else
+    public static void printError(String token) throws IOException {
+        if(currentChar == '\n' || currentChar == '\r') {//If after the token is new line, than line is: line -1 (since it is incremented by 1)
+            System.out.println("LEXICAL ERROR" + "[" + (line - 1) + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
+            file.write("LEXICAL ERROR" + "[" + (line - 1) + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'\n");
+        }
+        else {
             System.out.println("LEXICAL ERROR" + "[" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
+            file.write("LEXICAL ERROR" + "[" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'\n");
+        }
     }
 
 
 
     //Printing the token
-    public static void printToken(String token){
+    public static void printToken(String token) throws IOException {
 
 
-        if(currentChar == '\n' || currentChar == '\r')
-            System.out.println(token + " " + (line - 1) + ":" + tokenStartingColumn );
-        else
-            System.out.println(token + " " + line + ":" + tokenStartingColumn );
-
-
+        if(currentChar == '\n' || currentChar == '\r') {
+            System.out.println(token + " " + (line - 1) + ":" + tokenStartingColumn);
+            file.write(token + " " + (line - 1) + ":" + tokenStartingColumn +"\n");
+        }
+        else {
+            System.out.println(token + " " + line + ":" + tokenStartingColumn);
+            file.write(token + " " + line + ":" + tokenStartingColumn + "\n");
+        }
 
         //System.out.println(currentLexeme);
     }
