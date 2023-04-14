@@ -464,12 +464,12 @@ public class LexicalAnaylzer {
     //Printing the error
     public static void printError(String token) throws IOException {
         if(currentChar == '\n' || currentChar == '\r') {//If after the token is new line, than line is: line -1 (since it is incremented by 1)
-            System.out.println("LEXICAL ERROR" + "[" + (line - 1) + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
-            file.write("LEXICAL ERROR" + "[" + (line - 1) + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'\n");
+            System.out.println("LEXICAL ERROR" + " [" + (line - 1) + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
+            file.write("LEXICAL ERROR" + " [" + (line - 1) + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'\n");
         }
         else {
-            System.out.println("LEXICAL ERROR" + "[" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
-            file.write("LEXICAL ERROR" + "[" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'\n");
+            System.out.println("LEXICAL ERROR" + " [" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
+            file.write("LEXICAL ERROR" + " [" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'\n");
         }
         F.close();
         file.close();
