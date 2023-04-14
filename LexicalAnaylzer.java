@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,6 +30,16 @@ public class LexicalAnaylzer {
         try {  //try-catch block for catching file is not found error
             file = new FileWriter("output.txt");
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static FileReader F;
+
+    static {
+        try {
+            F = new FileReader("input.txt");
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -211,15 +222,18 @@ public class LexicalAnaylzer {
 
 
 
-                while(currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r' && !isParenthesis(currentChar)){
-                    currentLexeme += currentChar; //Continue recording
+                while(currentChar != ' ' && currentChar != '\uffff' && currentChar != '\n' && currentChar != '\r' && !isParenthesis(currentChar)
+                        && currentChar != '"' && currentChar != '\'' && currentChar != '~' ){
 
-                    if(isLetter(currentChar) || isDecDigit(currentChar) || currentChar == '.' || currentChar == '+' || currentChar == '-')
-                        lex(F);
-                    else {
-                        haveError = true;
+                    if(isLetter(currentChar) || isDecDigit(currentChar) || currentChar == '.' || currentChar == '+' || currentChar == '-') {
+                        currentLexeme += currentChar; //Continue recording
                         lex(F);
                     }
+                    else {
+                        haveError = true;
+                        //lex(F);
+                    }
+
 
                 }
 
@@ -457,6 +471,9 @@ public class LexicalAnaylzer {
             System.out.println("LEXICAL ERROR" + "[" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'");
             file.write("LEXICAL ERROR" + "[" + line + ":" + tokenStartingColumn + "]: Invalid token '" + token + "'\n");
         }
+        F.close();
+        file.close();
+        System.exit(0);
     }
 
 
