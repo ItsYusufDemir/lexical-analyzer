@@ -314,16 +314,17 @@ public class LexicalAnaylzer {
                 }
 
                 //If number is decimal or float enters this block
-                else {
+                else if (!(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff' || isParenthesis(currentChar))){
                     while(true && !isParenthesis(currentChar) && !isIdentifier) {
                         if(!(isDecDigit(currentChar) || currentChar == '+' || currentChar == '-' || currentChar == '.' || currentChar == 'e' || currentChar == 'E')) {
                             haveError = true;
                             while(true) {
                                 lex(F); //reads next char
-                                currentLexeme += currentChar;
+
                                 if(currentChar == ' ' || currentChar == '\t' || currentChar == '\n' || currentChar == '\r' || currentChar == '\uffff' || isParenthesis(currentChar)) {
                                     break; //stop the code if it is blank or new line
                                 }
+                                currentLexeme += currentChar;
                             }
                         }
                         lex(F); //reads next char
