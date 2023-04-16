@@ -15,7 +15,7 @@ import java.util.Scanner;
  */
 
 
-public class LexicalAnaylzer {
+public class LexicalAnalyzer {
 
     //  ---GLOBAL VARIABLES---
     static char previousChar = ' '; //previous char
