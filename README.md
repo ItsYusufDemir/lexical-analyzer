@@ -5,6 +5,7 @@ Authors: @erenduyuk, @selnaydinn and @ItsYusufDemir
 
 ## About the Program
 The program takes an input file that contains many lines as in the example below;  
+
 (define (fibonacci n)  
 (let fib ([prev 0]  
 [cur 1]  
@@ -15,6 +16,7 @@ cur
 
 The aim is to scan for all the lexemes and print their appropriate token with its location.  
 For example;  
+
 LEFTPAR 1:1  
 DEFINE 1:  
 ..  
