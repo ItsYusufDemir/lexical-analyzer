@@ -14,10 +14,10 @@ The program takes an input file that contains many lines as in the example below
 cur  
 (fib cur (+ prev cur) (+ i 1)))))  
 
-The aim is to scan for all the lexemes and print their appropriate token with its location.  
+The aim is to scan for all the lexemes and print their appropriate tokens with their locations.  
 For example;  
 
 LEFTPAR 1:1  
-DEFINE 1:  
+DEFINE 1:2  
 ..  
 ...  
